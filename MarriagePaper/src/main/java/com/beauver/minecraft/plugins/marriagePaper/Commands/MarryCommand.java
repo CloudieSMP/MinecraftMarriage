@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -224,6 +225,7 @@ public class MarryCommand extends BaseCommand {
             player.sendMessage(Component.text("You may not adopt someone that is offline.").color(TextColor.fromHexString("#FF5555")));
             return;
         }
+
         //not married
         Couple couple = null;
         for(Couple c : MarriageHandler.getMarriages()){
@@ -237,6 +239,18 @@ public class MarryCommand extends BaseCommand {
             return;
         }
 
+        // cannot adopt your own partner
+        if (target.getUniqueId().equals(couple.getPartner1()) || target.getUniqueId().equals(couple.getPartner2())) {
+            player.sendMessage(Component.text("You may not adopt your own partner.").color(TextColor.fromHexString("#FF5555")));
+            return;
+        }
+
+        // cannot adopt an existing child in this family
+        if (couple.getChildren().contains(target.getUniqueId())) {
+            player.sendMessage(Component.text("This player is already your child.").color(TextColor.fromHexString("#FF5555")));
+            return;
+        }
+
         AdoptRequest request = new AdoptRequest(player, target);
         AdoptRequestHandler.addAdoptionRequests(request);
 
@@ -247,7 +261,7 @@ public class MarryCommand extends BaseCommand {
                 .append(Component.text(" wants to adopt you!").color(TextColor.fromHexString("#55FF55")))
                 .append(Component.text("\nrun /marry adopt accept " + player.getName() + " to become their child").color(TextColor.fromHexString("#55FF55"))
                         .clickEvent(ClickEvent.runCommand("/marry adopt accept " + player.getName())))
-                        .hoverEvent(HoverEvent.showText(Component.text("Click this to accept the adoption request").color(TextColor.fromHexString("#55FF55"))))
+                .hoverEvent(HoverEvent.showText(Component.text("Click this to accept the adoption request").color(TextColor.fromHexString("#55FF55"))))
                 .append(Component.text("\nrun /marry adopt reject " + player.getName() + " to stay an orphan").color(TextColor.fromHexString("#FF5555"))
                         .clickEvent(ClickEvent.runCommand("/marry adopt reject " + player.getName()))
                         .hoverEvent(HoverEvent.showText(Component.text("Click this to reject the adoption request").color(TextColor.fromHexString("#FF5555"))))));
@@ -417,8 +431,8 @@ public class MarryCommand extends BaseCommand {
         target.sendActionBar(Component.text("Your partner grabbed you closely and kissed you on the lips!").color(TextColor.fromHexString("#FFAA00")));
         player.sendActionBar(Component.text("You kissed your partner!").color(TextColor.fromHexString("#FFAA00")));
 
-        target.spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
-        player.spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
+        target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
+        player.getWorld().spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
     }
 
     @Subcommand("hug")
@@ -437,8 +451,8 @@ public class MarryCommand extends BaseCommand {
         target.sendActionBar(Component.text("Your partner hugged you tightly!").color(TextColor.fromHexString("#FFAA00")));
         player.sendActionBar(Component.text("You hugged your partner!").color(TextColor.fromHexString("#FFAA00")));
 
-        target.spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation(), 10, 0.5,0.5,0.5);
-        player.spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation(), 10, 0.5,1,0.5);
+        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation(), 10, 0.5, 0.5, 0.5);
+        player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation(), 10, 0.5, 1, 0.5);
     }
 
     @Subcommand("adopt pat")
@@ -478,8 +492,8 @@ public class MarryCommand extends BaseCommand {
         player.sendActionBar(Component.text("You head-patted your child!").color(TextColor.fromHexString("#FFAA00")));
         target.sendActionBar(Component.text(player.getName() + " has pat your head!").color(TextColor.fromHexString("#FFAA00")));
 
-        player.spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation(), 10, 0.5,0.5,0.5);
-        target.spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation(), 10, 0.5,0.5,0.5);
+        player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation(), 10, 0.5,0.5,0.5);
+        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation(), 10, 0.5,0.5,0.5);
     }
 
     @Subcommand("modify")
@@ -607,10 +621,20 @@ public class MarryCommand extends BaseCommand {
             return;
         }
 
-        int delayInSeconds = 2; // maybe add config? -> Probs later
+        int delayInSeconds = 3;
 
-        target.sendActionBar(Component.text("Your partner will tp to you in '" + delayInSeconds +"' seconds...").color(TextColor.fromHexString("#FFAA00")));
-        player.sendActionBar(Component.text("You will be tped in  '" + delayInSeconds +"' seconds...").color(TextColor.fromHexString("#FFAA00")));
+        for (int i = delayInSeconds; i > 0; i--) {
+            final int secondsLeft = i;
+            Bukkit.getScheduler().runTaskLater(MarriagePaper.plugin, () -> {
+                target.sendActionBar(
+                        Component.text("Your partner will tp to you in " + secondsLeft + " seconds...")
+                                .color(TextColor.fromHexString("#FFAA00")));
+                player.sendActionBar(
+                        Component.text("You will be tped in " + secondsLeft + " seconds...")
+                                .color(TextColor.fromHexString("#FFAA00")));
+            }, (delayInSeconds - secondsLeft) * 20L);
+        }
+
         Bukkit.getScheduler().runTaskLater(MarriagePaper.plugin, () -> {
             player.teleport(target.getLocation());
             player.sendActionBar(Component.text("You have been tped to ur partner!").color(TextColor.fromHexString("#FFAA00")));
@@ -622,40 +646,57 @@ public class MarryCommand extends BaseCommand {
     @Subcommand("inventory")
     @CommandCompletion("@nothing")
     public void marryInventory(CommandSender sender){
-      if(!(sender instanceof Player player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
             return;
         }
 
         Player target = getPartner(player);
-        if(target == null){
+        if (target == null) {
             player.sendMessage(Component.text("You do not have a partner or they're not online. I'm afraid you can't see their inventory.").color(TextColor.fromHexString("#FF5555")));
             return;
         }
 
         Inventory copy = Bukkit.createInventory(player, 45, Component.text(target.getName() + "'s Inventory"));
-        copy.setContents(target.getInventory().getContents());
-
-        copy.setItem(36, setCustomName(target.getInventory().getItemInMainHand(), "Main Hand"));
-        copy.setItem(37, setCustomName(target.getInventory().getItemInOffHand(), "Off Hand"));
-        copy.setItem(38, setCustomName(target.getInventory().getHelmet(), "Helmet", false));
-        copy.setItem(39, setCustomName(target.getInventory().getChestplate(), "Chestplate", false));
-        copy.setItem(40, setCustomName(target.getInventory().getLeggings(), "Leggings", false));
-        copy.setItem(41, setCustomName(target.getInventory().getBoots(), "Boots", false));
-        copy.setItem(42, setCustomName(target.getItemOnCursor(), "Cursor Item"));
-        copy.setItem(43, setCustomName(new ItemStack(Material.BARRIER), "Unused"));
-        copy.setItem(44, setCustomName(new ItemStack(Material.BARRIER), "Unused"));
-
         player.openInventory(copy);
 
-        player.getServer().getPluginManager().registerEvents(new Listener() {
+        // keep inventory read-only and updated
+        Listener listener = new Listener() {
             @EventHandler
             public void onInventoryClick(InventoryClickEvent event) {
-                if (event.getInventory().equals(copy)) {
+                if (event.getWhoClicked().equals(player) && event.getInventory().equals(copy)) {
                     event.setCancelled(true);
                 }
             }
-        }, MarriagePaper.plugin);
+
+            @EventHandler
+            public void onInventoryClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
+                if (event.getPlayer().equals(player) && event.getInventory().equals(copy)) {
+                    InventoryCloseEvent.getHandlerList().unregister(this);
+                    InventoryClickEvent.getHandlerList().unregister(this);
+                }
+            }
+        };
+
+        player.getServer().getPluginManager().registerEvents(listener, MarriagePaper.plugin);
+
+        // schedule periodic updates while the inventory is open
+        Bukkit.getScheduler().runTaskTimer(MarriagePaper.plugin, () -> {
+            if (!player.isOnline() || !player.getOpenInventory().getTopInventory().equals(copy)) {
+                return;
+            }
+
+            copy.setContents(target.getInventory().getContents());
+            copy.setItem(36, setCustomName(target.getInventory().getItemInMainHand(), "Main Hand"));
+            copy.setItem(37, setCustomName(target.getInventory().getItemInOffHand(), "Off Hand"));
+            copy.setItem(38, setCustomName(target.getInventory().getHelmet(), "Helmet", false));
+            copy.setItem(39, setCustomName(target.getInventory().getChestplate(), "Chestplate", false));
+            copy.setItem(40, setCustomName(target.getInventory().getLeggings(), "Leggings", false));
+            copy.setItem(41, setCustomName(target.getInventory().getBoots(), "Boots", false));
+            copy.setItem(42, setCustomName(new ItemStack(Material.BARRIER), "Unused"));
+            copy.setItem(43, setCustomName(new ItemStack(Material.BARRIER), "Unused"));
+            copy.setItem(44, setCustomName(new ItemStack(Material.BARRIER), "Unused"));
+        }, 0L, 20L);
     }
 
     @Subcommand("gift")
@@ -709,8 +750,8 @@ public class MarryCommand extends BaseCommand {
 
         target.sendActionBar(Component.text("Your partner is a little too silly, go and get a room! Have fun of course! ;p").color(TextColor.fromHexString("#FFAA00")));
         player.sendActionBar(Component.text("You're a little silly, luckily there's a room nearby, have fun! ;p").color(TextColor.fromHexString("#FFAA00")));
-        target.spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
-        player.spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
+        target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
+        player.getWorld().spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
 
         if(new Random().nextInt(250) == 1){
             player.getServer().broadcast(Component.text(player.getName()).color(TextColor.fromHexString("#AA0000"))

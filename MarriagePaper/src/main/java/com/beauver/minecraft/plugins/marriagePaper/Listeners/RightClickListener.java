@@ -36,8 +36,8 @@ public class RightClickListener implements Listener {
 
         target.sendActionBar(Component.text("Your partner grabbed you closely and kissed you on the lips!").color(TextColor.fromHexString("#FFAA00")));
         player.sendActionBar(Component.text("You kissed your partner!").color(TextColor.fromHexString("#FFAA00")));
-        target.spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
-        player.spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
+        target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 10, 0.5,0.5,0.5);
+        player.getWorld().spawnParticle(Particle.HEART, player.getLocation(), 10, 0.5,1,0.5);
     }
 
 }
