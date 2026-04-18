@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("com.gradleup.shadow") version "9.4.1"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 group = 'com.beauver.minecraft.plugins'
@@ -24,11 +24,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
@@ -46,9 +46,9 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-tasks {
-    runServer {
-        minecraftVersion("1.21.11")
+tasks{
+    runServer{
+        minecraftVersion("26.1.2")
     }
 }
 
