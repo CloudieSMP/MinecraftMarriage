@@ -2,13 +2,13 @@
 MarriagePaper is a lightweight Paper plugin that adds roleplay-style marriages, adoptions and partner interactions to your server.
 
 ## Features
-Propose, accept, reject and divorce players
-Adopt players into a married couple's family, accept/reject adoption
-Partner interactions: kiss, hug, teleport to partner, view partner inventory, gift items
-Children management (adopt, leave, pat)
-Persistent data stored in JSON files in the plugin data folder
-Sneak-right-click to kiss (on partners)
-Important: the plugin includes an adult/NSFW-styled command named /marry fuck. Server owners should be aware this exists and control access via permissions.
+Propose, accept, reject and divorce players <br>
+Adopt players into a married couple's family, accept/reject adoption <br>
+Partner interactions: kiss, hug, teleport to partner, view partner inventory, gift items <br>
+Children management (adopt, leave, pat) <br>
+Persistent data stored in JSON files in the plugin data folder <br>
+Sneak-right-click to kiss (on partners) <br>
+Important: the plugin includes an silly adult/NSFW-styled command named /marry fuck. This can be controlled via permissions. <br>
 
 ## Quick install (server)
 Download the MarriagePaper.jar from the newest release.
