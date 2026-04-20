@@ -42,7 +42,6 @@ import java.util.UUID;
 @CommandAlias("marry")
 public class MarryCommand extends BaseCommand {
 
-    @Default
     @Subcommand("propose")
     @CommandCompletion("@players")
     public void marryPlayer(CommandSender sender, String[] args) {
@@ -70,10 +69,12 @@ public class MarryCommand extends BaseCommand {
         }
         //already outgoing proposal to targer
         for(ProposalRequest r : ProposalRequestHandler.getProposals()){
-            if(r.getProposer().equals(player.getUniqueId()) && r.getProposer().equals(target.getUniqueId())){
+            if(r.getProposer().equals(player.getUniqueId()) || r.getProposer().equals(target.getUniqueId())){
                 player.sendMessage(Component.text("You already have an outgoing proposal to this player.").color(TextColor.fromHexString("#FF5555")));
+                return;
             }
         }
+
         //is already married
         for(Couple c : MarriageHandler.getMarriages()){
             if(c.getPartner1().equals(player.getUniqueId()) || c.getPartner2().equals(player.getUniqueId())) {
