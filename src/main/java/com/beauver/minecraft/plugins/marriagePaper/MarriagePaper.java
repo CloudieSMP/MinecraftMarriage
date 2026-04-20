@@ -9,7 +9,6 @@ public final class MarriagePaper extends JavaPlugin {
 
     public static MarriagePaper plugin = null;
 
-
     @Override
     public void onEnable() {
         if(plugin == null){
