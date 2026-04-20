@@ -1,10 +1,7 @@
 package com.beauver.minecraft.plugins.marriagePaper.Commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import com.beauver.minecraft.plugins.marriagePaper.Classes.AdoptRequest;
 import com.beauver.minecraft.plugins.marriagePaper.Classes.Couple;
 import com.beauver.minecraft.plugins.marriagePaper.Classes.ProposalRequest;
@@ -42,9 +39,9 @@ import java.util.UUID;
 @CommandAlias("marry")
 public class MarryCommand extends BaseCommand {
 
-    @Default
     @Subcommand("propose")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.marry")
     public void marryPlayer(CommandSender sender, String[] args) {
         //checks
         if(!(sender instanceof Player player)) {
@@ -70,10 +67,12 @@ public class MarryCommand extends BaseCommand {
         }
         //already outgoing proposal to targer
         for(ProposalRequest r : ProposalRequestHandler.getProposals()){
-            if(r.getProposer().equals(player.getUniqueId()) && r.getProposer().equals(target.getUniqueId())){
+            if(r.getProposer().equals(player.getUniqueId()) || r.getProposer().equals(target.getUniqueId())){
                 player.sendMessage(Component.text("You already have an outgoing proposal to this player.").color(TextColor.fromHexString("#FF5555")));
+                return;
             }
         }
+
         //is already married
         for(Couple c : MarriageHandler.getMarriages()){
             if(c.getPartner1().equals(player.getUniqueId()) || c.getPartner2().equals(player.getUniqueId())) {
@@ -100,6 +99,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("accept")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.marry")
     public void acceptMarry(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -142,6 +142,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("reject")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.marry")
     public void rejectMarry(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -177,6 +178,7 @@ public class MarryCommand extends BaseCommand {
     }
 
     @Subcommand("divorce")
+    @CommandPermission("marriage.marry")
     public void marryDivorce(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -203,6 +205,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("adopt")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.adopt")
     public void adoptPlayer(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -269,6 +272,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("adopt accept")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.adopt")
     public void acceptAdopt(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -321,6 +325,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("adopt reject")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.adopt")
     public void rejectAdopt(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -370,6 +375,7 @@ public class MarryCommand extends BaseCommand {
     }
 
     @Subcommand("adopt leave")
+    @CommandPermission("marriage.adopt")
     public void adoptLeave(CommandSender sender, String[] args){
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -416,6 +422,7 @@ public class MarryCommand extends BaseCommand {
     }
 
     @Subcommand("kiss")
+    @CommandPermission("marriage.marry.kiss")
     public void marryKiss(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -436,6 +443,7 @@ public class MarryCommand extends BaseCommand {
     }
 
     @Subcommand("hug")
+    @CommandPermission("marriage.marry.hug")
     public void marryHug(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -457,6 +465,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("adopt pat")
     @CommandCompletion("@players")
+    @CommandPermission("marriage.adopt.pat")
     public void hatpatAdopted(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -498,12 +507,14 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("modify")
     @CommandCompletion("@nothing")
+    @CommandPermission("marriage.marry")
     public void modifyRelationship(CommandSender sender, String[] args) {
         sender.sendMessage(Component.text("Invalid command.").color(TextColor.fromHexString("#FF5555")));
     }
 
     @Subcommand("modify relationship")
     @CommandCompletion("straight|gay|lesbian")
+    @CommandPermission("marriage.marry")
     public void marryChangeRelationshipType(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -545,6 +556,7 @@ public class MarryCommand extends BaseCommand {
     }
 
     @Subcommand("list")
+    @CommandPermission("marriage.marry")
     public void marryList(CommandSender sender){
         if(!(sender instanceof Player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -608,7 +620,9 @@ public class MarryCommand extends BaseCommand {
         }
         sender.sendMessage(marryList);
     }
+
     @Subcommand("tp")
+    @CommandPermission("marriage.marry.tp")
     public void marryTp(CommandSender sender, String[] args) {
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -645,6 +659,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("inventory")
     @CommandCompletion("@nothing")
+    @CommandPermission("marriage.marry.inventory")
     public void marryInventory(CommandSender sender){
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -701,6 +716,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("gift")
     @CommandCompletion("@nothing")
+    @CommandPermission("marriage.marry.gift")
     public void marryGift(CommandSender sender){
       if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
@@ -736,6 +752,7 @@ public class MarryCommand extends BaseCommand {
 
     @Subcommand("fuck")
     @CommandCompletion("@nothing")
+    @CommandPermission("marriage.marry.fuck")
     public void marryFuck(CommandSender sender){
         if(!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Only a player can run this command.").color(TextColor.fromHexString("#FF5555")));
