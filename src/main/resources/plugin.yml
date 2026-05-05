@@ -13,9 +13,9 @@ permissions:
         marriage.marry.kiss: true
         marriage.marry.hug: true
         marriage.marry.tp: true
-        marraige.marry.inventory: true
-        marraige.marry.gift: true
-        marraige.marry.fuck: false
+        marriage.marry.inventory: true
+        marriage.marry.gift: true
+        marriage.marry.fuck: false
 
   marriage.adopt:
     description: Allows a player to adopt other players as their children.
