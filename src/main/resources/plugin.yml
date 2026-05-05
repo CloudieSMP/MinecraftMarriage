@@ -1,6 +1,24 @@
 name: MarriagePaper
 version: ${version}
 main: com.beauver.minecraft.plugins.marriagePaper.MarriagePaper
-api-version: '1.21.8'
+api-version: '26.1.2'
 authors: [ Beauver, Sebiann ]
-description: Mairrage mod thingy
+description: Marriage mod
+
+permissions:
+  marriage.marry:
+    description: Allows a player to marry, divorce and modify their relationship
+    default: true
+    children:
+        marriage.marry.kiss: true
+        marriage.marry.hug: true
+        marriage.marry.tp: true
+        marraige.marry.inventory: true
+        marraige.marry.gift: true
+        marraige.marry.fuck: false
+
+  marriage.adopt:
+    description: Allows a player to adopt other players as their children.
+    default: true
+    children:
+        marriage.adopt.pat: true
