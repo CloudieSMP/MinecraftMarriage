@@ -1,6 +1,9 @@
 package com.beauver.minecraft.plugins.marriagePaper;
 
 import co.aikar.commands.PaperCommandManager;
+import com.beauver.minecraft.plugins.marriagePaper.Commands.AdoptCommand;
+import com.beauver.minecraft.plugins.marriagePaper.Commands.AdoptInteractionCommands;
+import com.beauver.minecraft.plugins.marriagePaper.Commands.MarriageInteractionCommand;
 import com.beauver.minecraft.plugins.marriagePaper.Commands.MarryCommand;
 import com.beauver.minecraft.plugins.marriagePaper.Listeners.RightClickListener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +25,9 @@ public final class MarriagePaper extends JavaPlugin {
     void registerCommands(){
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new MarryCommand());
+        manager.registerCommand(new MarriageInteractionCommand());
+        manager.registerCommand(new AdoptCommand());
+        manager.registerCommand(new AdoptInteractionCommands());
     }
 
     void registerEventListeners(){
